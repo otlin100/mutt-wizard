@@ -17,7 +17,7 @@ echo " 🔃" > /tmp/imapsyncicon
 pkill -RTMIN+12 i3blocks
 
 # Run mbsync. You can feed this script different settings.
-mbsync -a "$@"
+mbsync -c ~/.config/mbsync/config -a "$@"
 rm -f /tmp/imapsyncicon
 pkill -RTMIN+12 i3blocks
 
