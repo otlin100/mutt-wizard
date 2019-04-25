@@ -12,6 +12,11 @@ mwconfig="/usr/share/mutt-wizard/mutt-wizard.muttrc"
 cachedir="$HOME/.cache/mutt-wizard"
 muttrc="$muttdir/muttrc"
 
+for x in "/etc/ssl/certs/ca-certificates.crt" "/etc/pki/tls/certs/ca-bundle.crt" "/etc/ssl/ca-bundle.pem" "/etc/pki/tls/cacert.pem" "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+do
+	[ -f "$x" ] && sslcert="$x" && break
+done || { echo "CA Certificate not found. Please install one or link it to /etc/ssl/certs/ca-certificates.crt" && exit 1 ;}
+
 getaccounts() { accounts="$(find "$accdir" -type f | grep -o "[0-9]-.*.muttrc" | sed "s/-/: /;s/\..*//" | sort -n)" ;}
 list() { getaccounts && [ -n "$accounts" ] && echo "$accounts" ;}
 
@@ -37,7 +42,7 @@ Port  $iport
 User $login
 PassCmd \"gopass mutt-wizard-$title\"
 SSLType IMAPS
-CertificateFile /etc/ssl/certs/ca-certificates.crt
+CertificateFile $sslcert
 
 MaildirStore $title-local
 Subfolders Verbatim
@@ -114,7 +119,7 @@ askinfo() { \
 	done
 	domain="$(echo "$fulladdr" | sed "s/.*@//")"
 	printf "\\nSearching for \033[32m%s\033[0m in \033[34m\`domains.csv\`\033[0m..." "$domain"
-	serverinfo="$(grep "$domain" "$muttshare/domains.csv" 2>/dev/null)"
+	serverinfo="$(grep "^$domain" "$muttshare/domains.csv" 2>/dev/null)"
 	if [ -z "$serverinfo" ]; then
 		printf "Your email domain is not in mutt-wizard's database yet.\\nmutt-wizard will still autoconfigure everything, but you will have to manually type in your service's IMAP and SMTP server information.\\nYou can usually quickly find this by internet searching for it.\\n"
 		printf "Insert the IMAP server for your email provider (excluding the port number)\\n\033[36m\t"
@@ -243,7 +248,7 @@ choosecron() { ! pgrep -x cron\|crond >/dev/null && echo "No cron manager runnin
 			read -r minnum
 			printf "\033[0m"
 		done
-		(crontab -l; echo "*/$minnum * * * * export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus; export DISPLAY=:0; . \$HOME/.profile; $(type mailsync | cut -d' ' -f3)") | crontab - &&
+		(crontab -l; echo "*/$minnum * * * * export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus; export DISPLAY=:0; . \$HOME/.profile; $(type mailsync | cut -d' ' -f3)") | crontab - &&
 			echo "Cronjob added. Mail will sync every $minnum minutes. Be sure you have your cron manager running."
 	fi ;}
 
