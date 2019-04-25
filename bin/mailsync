@@ -17,15 +17,17 @@ echo " 🔃" > /tmp/imapsyncicon
 pkill -RTMIN+12 i3blocks
 
 # Run mbsync. You can feed this script different settings.
-mbsync -c ~/.config/mbsync/config -a "$@"
+accounts=$(ls "$XDG_DATA_HOME"/mail | grep """$@")
+echo "$accounts" | xargs --max-procs=4 -n 1 -I account mbsync -c ~/.config/mbsync/config -V account
+
 rm -f /tmp/imapsyncicon
 pkill -RTMIN+12 i3blocks
 
 # Check all accounts/mailboxes for new mail. Notify if there is new content.
-for account in "$HOME/.local/share/mail/"*
+# for account in "$HOME/.local/share/mail/"*
+for acc in $accounts
 do
-	acc="$(echo "$account" | sed "s/.*\///")"
-	newcount=$(find "$HOME/.local/share/mail/$acc/INBOX/new/" "$HOME/.local/share/mail/$acc/Inbox/new/" "$HOME/.local/share/mail/$acc/inbox/new/" -type f -newer "$HOME/.config/mutt/.mailsynclastrun" 2> /dev/null | wc -l)
+	newcount=$(find "$XDG_DATA_HOME/mail/$acc/INBOX/new/" "$XDG_DATA_HOME/mail/$acc/Inbox/new/" "$XDG_DATA_HOME/mail/$acc/inbox/new/" -type f -newer "$HOME/.config/mutt/.mailsynclastrun" 2> /dev/null | wc -l)
 	[ "$newcount" -gt "0" ] && notify "$acc" "$newcount" &
 done
 notmuch new 2>/dev/null
