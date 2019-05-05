@@ -130,6 +130,7 @@ nigge.rs,mail.cock.li,993,mail.cock.li,587
 nuke.africa,mail.cock.li,993,mail.cock.li,587
 nyu.edu,imap.gmail.com,993,smtp.gmail.com,587
 o2.pl,poczta.o2.pl,993,poczta.o2.pl,465
+one.com,imap.one.com,993,send.one.com,465
 onenetbeyond.org,mail.autistici.org,993,smtp.autistici.org,465
 onet.com.pl,imap.poczta.onet.pl,993,smtp.poczta.onet.pl,465
 onet.eu,imap.poczta.onet.pl,993,smtp.poczta.onet.pl,465
@@ -156,10 +157,12 @@ redchan.it,mail.cock.li,993,mail.cock.li,587
 runbox.com,mail.runbox.com,993,mail.runbox.com,587
 rwth-aachen.de,mail.rwth-aachen.de,993,mail.rwth-aachen.de,587
 sapo.pt,imap.sapo.pt,993,smtp.sapo.pt,587
+southwales.ac.uk,imap.gmail.com,993,smtp.gmail.com,587
 spoko.pl,imap.poczta.onet.pl,993,smtp.poczta.onet.pl,465
 stronzi.org,mail.autistici.org,993,smtp.autistici.org,465
 stud.tu-darmstadt.de,imap.stud.tu-darmstadt.de,993,smtp.tu-darmstadt.de,465
 stud.uis.no,outlook.office365.com,993,smtp.office365.com,587
+students.southwales.ac.uk,imap.gmail.com,993,smtp.gmail.com,587
 studserv.uni-leipzig.de,studserv.uni-leipzig.de,993,studserv.uni-leipzig.de,25
 subvertising.org,mail.autistici.org,993,smtp.autistici.org,465
 t-online.de,secureimap.t-online.de,993,securesmtp.t-online.de,465
