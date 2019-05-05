@@ -8,6 +8,8 @@ w | grep "^$USER\W" >/dev/null || exit
 ping -q -c 1 1.1.1.1 > /dev/null || exit
 command -v notify-send >/dev/null || echo "Note that \`libnotify\` or \`libnotify-send\` should be installed for pop-up mail notifications with this script."
 
+echo "GPG Authentication..."
+gopass find mutt | head -n 1 | xargs gopass &>/dev/null
 export DISPLAY=:0.0
 
 logfile="$XDG_CONFIG_HOME"/mutt/.mbsync.log
