@@ -9,7 +9,7 @@ ping -q -c 1 1.1.1.1 > /dev/null || exit
 command -v notify-send >/dev/null || echo "Note that \`libnotify\` or \`libnotify-send\` should be installed for pop-up mail notifications with this script."
 
 echo "GPG Authentication..."
-gopass find mutt | head -n 1 | xargs gopass &>/dev/null
+gopass find mutt | head -n 1 | xargs gopass >/dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "Authentication failed!"
     exit 1
