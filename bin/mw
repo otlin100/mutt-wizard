@@ -1,15 +1,7 @@
 #!/bin/sh
-! command -v mbsync >/dev/null && printf "\`mbsync\` must be installed to run mutt-wizard.\\n" && exit
-pass="pass"
-ifinstalled gopass
-if [ $? -eq 0 ]; then
-    pass="gopass"
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  prefix="/usr/local"
-else
-  prefix="/usr"
-fi
+pass="gopass"
+prefix="/usr"
 muttdir="$HOME/.config/mutt"		# Main mutt config location
 accdir="$muttdir/accounts"		# Directory for account settings
 maildir="$HOME/.local/share/mail"	# Location of mail storage
