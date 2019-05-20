@@ -2,7 +2,7 @@
 # Sync mail and give notification if there is new mail.
 
 # Run only if user logged in (prevent cron errors)
-pgrep -cu "$USER" >/dev/null || exit
+pgrep -u "$USER" >/dev/null || exit
 
 # Checks for internet connection and set notification script.
 ping -q -c 1 1.1.1.1 > /dev/null || exit
@@ -28,14 +28,14 @@ touch "$logfile"
 notify() { notify-send "mutt-wizard" "📬 $2 new mail(s) in \`$1\` account." ;}
 
 echo " 🔃" > /tmp/imapsyncicon_$USER
-pkill -RTMIN+12 i3blocks
+pkill -RTMIN+12 i3blocks >/dev/null 2>&1
 
 # Run mbsync. You can feed this script different settings.
 accounts=$(ls "$XDG_DATA_HOME"/mail | grep """$@")
 echo "$accounts" | xargs --max-procs=4 -n 1 -I account mbsync -c ~/.config/mbsync/config -V account 2>&1 | tee "$logfile"
 
 rm -f /tmp/imapsyncicon_$USER
-pkill -RTMIN+12 i3blocks
+pkill -RTMIN+12 i3blocks >/dev/null 2>&1
 
 # Check all accounts/mailboxes for new mail. Notify if there is new content.
 # for account in "$HOME/.local/share/mail/"*
