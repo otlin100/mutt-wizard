@@ -1,6 +1,6 @@
 #!/bin/sh
 # Helps open a file with xdg-open from mutt in a external program without weird side effects.
-[ $(uname) = "Darwin" ] && opener="open" || opener="setsid xdg-open"
+opener="setsid xdg-open"
 mkdir -p "/tmp/$USER-mutt-tmp"
 file="/tmp/$USER-mutt-tmp/$(basename "$1")"
 rm -f "$file"
