@@ -1,13 +1,18 @@
 #!/usr/bin/env sh
 # Sync mail and give notification if there is new mail.
 
+export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
+export DISPLAY=:0.0
+[ -d "$HOME/.local/share/gopass" ] && export PASSWORD_STORE_DIR="$HOME/.local/share/gopass"
+
 # Run only if user logged in (prevent cron errors)
-pgrep -u "$USER" >/dev/null || exit
+pgrep -u "$USER" >/dev/null || { echo "$USER not logged in; sync will not run."; exit ;}
 # Run only if not already running in other instance
-pgrep -x mbsync >/dev/null && exit
+pgrep -x mbsync >/dev/null && { echo "mbsync is already running." ; exit ;}
 
 # Checks for internet connection and set notification script.
-ping -q -c 1 1.1.1.1 > /dev/null || exit
+ping -q -c 1 1.1.1.1 > /dev/null || { echo "No internet connection detected."; exit ;}
 command -v notify-send >/dev/null || echo "Note that \`libnotify\` or \`libnotify-send\` should be installed for pop-up mail notifications with this script."
 
 echo "GPG Authentication..."
@@ -16,8 +21,6 @@ if [ $? -ne 0 ]; then
     echo "Authentication failed!"
     exit 1
 fi
-
-export DISPLAY=:0.0
 
 logfile="$XDG_CONFIG_HOME"/mutt/.mbsync.log
 logfile_old="$XDG_CONFIG_HOME"/mutt/.mbsync.log_old
