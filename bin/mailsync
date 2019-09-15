@@ -56,8 +56,6 @@ else
     accounts=$*
 fi
 
-notify-send "$accounts" &
-
 echo " 🔃" > /tmp/imapsyncicon_"$USER"
 pkill -RTMIN+12 i3blocks >/dev/null 2>&1
 
