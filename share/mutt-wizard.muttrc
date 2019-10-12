@@ -102,7 +102,6 @@ bind attach <return> view-mailcap
 bind attach <space> tag-entry
 macro attach s "<save-entry><bol>~/Downloads/<return>" "Save to Downloads"
 
-
 # Sidebar mappings
 set sidebar_visible = yes
 set sidebar_width = 20
