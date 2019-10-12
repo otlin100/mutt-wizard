@@ -16,8 +16,8 @@ export DISPLAY=:0.0
 command -v notify-send >/dev/null || echo "Note that \`libnotify\` or \`libnotify-send\` should be installed for pop-up mail notifications with this script." &
 
 lognotify() {
-    echo "$1"
-    notify-send "$1"
+    echo "$@"
+    notify-send "$@"
 }
 
 # Run only if user logged in (prevent cron errors)
@@ -26,7 +26,7 @@ pgrep -u "$USER" >/dev/null || { lognotify "$USER not logged in; sync will not r
 pgrep -x mbsync >/dev/null && { lognotify "mbsync is already running."; exit ;}
 
 # Checks for internet connection and set notification script.
-ping -q -c 1 1.1.1.1 > /dev/null || { lognotify "No internet connection detected."; exit ;}
+# ping -q -c 1 1.1.1.1 > /dev/null || { lognotify "No internet connection detected."; exit ;}
 
 echo "GPG Authentication..."
 gopass find mutt | head -n 1 | xargs gopass >/dev/null 2>&1
@@ -34,14 +34,14 @@ if [ $? -ne 0 ]; then
     lognotify "Authentication failed!" &
     exit 1
 fi
-
+wait
 
 notify() { lognotify "mutt-wizard" "📬 $2 new mail(s) in \`$1\` account." ;}
 
 # Check account for new mail. Notify if there is new content.
 syncandnotify() {
     acc="$(echo "$account" | sed "s/.*\///")"
-    mbsync -c "$XDG_CONFIG_HOME/mbsync/config" -V "$acc" 2>&1 | sed "s/^/$acc: /" >>"$logfile"
+    mbsync -c "$XDG_CONFIG_HOME/mbsync/config" -V "$acc" 2>&1 | sed "s/^/$acc: /" >> "$logfile"
     new=$(find "$XDG_DATA_HOME/mail/$acc/INBOX/new/" "$XDG_DATA_HOME/mail/$acc/Inbox/new/" "$XDG_DATA_HOME/mail/$acc/inbox/new/" -type f -newer "$XDG_CONFIG_HOME/mutt/.mailsynclastrun" 2> /dev/null)
     newcount=$(echo "$new" | sed '/^\s*$/d' | wc -l)
     if [ "$newcount" -gt "0" ]; then
@@ -50,7 +50,7 @@ syncandnotify() {
             # Extract subject and sender from mail.
             from=$(awk '/^From: / && ++n ==1,/^\<.*\>:/' "$file" | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' | awk '{ $1=""; if (NF>=3)$NF=""; print $0 }' | sed 's/^[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//')
             subject=$(awk '/^Subject: / && ++n == 1,/^\<.*\>: / && ++i == 2' "$file" | head -n-1 | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' | sed 's/^Subject: //' | sed 's/^{[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//' | tr -d '\n')
-            lognotify "📧$from:" "$subject" &
+            lognotify "📧 $from:" "$subject" &
         done
     fi
 }
@@ -80,4 +80,4 @@ notmuch new 2>/dev/null
 #Create a touch file that indicates the time of the last run of mailsync
 touch "$XDG_CONFIG_HOME/mutt/.mailsynclastrun"
 
-lognotify "finished syncing"
+lognotify "✔ Finished syncing!"
