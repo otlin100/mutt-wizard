@@ -23,6 +23,7 @@ set forward_quote		# include message in forwards
 set reverse_name		# reply as whomever it was to
 set include			# include message in replies
 set mail_check=60 # to avoid lags using IMAP with some email providers (yahoo for example)
+set pager_stop=yes # don't go to next message when hitting the bottom
 auto_view text/html		# automatically show html (mailcap uses w3m)
 auto_view application/pgp-encrypted
 alternative_order text/plain text/enriched text/html
@@ -38,14 +39,15 @@ bind editor <esc> noop
 
 # Format
 
+set status_on_top = yes
 set date_format="%d.%m.%y %H:%M"
 set index_format="%2C %zs %?X?A& ? %D %-15.15F %s (%-4.4c)"
 set sidebar_format = '%B%?F? %F!?%* %?N?%N/?%?S?%S?'
 
 # General rebindings
 bind index l display-message
-bind index G last-entry
-bind index gg first-entry
+bind index,query G last-entry
+bind index,query gg first-entry
 bind index gd delete-pattern
 bind index gs sort-reverse
 bind index D delete-message
@@ -72,7 +74,7 @@ macro index,pager \Cj "<sidebar-next><sidebar-open>"
 macro index,pager M "<save-message>?"
 macro index,pager C "<copy-message>?"
 
-bind pager,alias,attach,compose h exit
+bind pager,alias,attach,compose,query,postpone h exit
 
 bind pager l view-attachments
 bind pager j next-line
@@ -80,19 +82,21 @@ bind pager k previous-line
 bind pager \031 previous-line		# Mouse wheel
 bind pager \005 next-line		# Mouse wheel
 
-bind pager,browser gg top-page
-bind pager,browser G bottom-page
+bind pager gg top
+bind pager G bottom
 
-bind browser l select-entry
+bind browser gg top-page
+bind browser G bottom-page
+
 macro browser h '<change-dir><kill-line>..<enter>' "Go to parent folder"
+
+bind browser,alias,query,postpone l select-entry
 
 bind index,pager,browser d half-down
 bind index,pager,browser u half-up
 
 bind editor <Tab> complete-query
 macro editor <esc> "<kill-line><return>"
-
-bind alias l select-entry
 
 bind compose l view-attach
 macro compose a "<attach-file>?"
