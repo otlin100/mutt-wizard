@@ -52,7 +52,7 @@ There's a chance of errors if you use a slow-release distro like Ubuntu, Debian 
 
 ### Optional
 
-- `w3m` - view HTML email and images in neomutt.
+- `lynx` - view HTML email in neomutt.
 - `notmuch` - index and search mail. Install it and run `notmuch setup`, tell it that your mail is in `~/.local/share/mail/` (although `mw` will do this automatically if you haven't set notmuch up before). You can run it in mutt with `ctrl-f`. Run `notmuch new` to process new mail, although the included `mailsync` script does this for you.
 - `libnotify`/`libnotify-bin` - allows notifications when syncthing mail with `mailsync`
 - `abook` - a terminal-based address book. Pressing tab while typing an address to send mail to will suggest contacts that are in your abook.
@@ -112,6 +112,7 @@ mutt-wizard is free/libre software, licensed under the GPLv3.
 ## Watch out for these things:
 - Gmail accounts can now create 'App Password' to use with """less secure""" applications. This password is single use (ie. for setup) and will be stored and encrypted locally. Enabling third-party applications requires turning off two-factor authentication and this will circumvent that. You might also need to manually "Enable IMAP" in the settings.
 - Protonmail accounts will require you to set up "Protonmail Bridge" to access PM's IMAP and SMTP servers. Configure that before running mutt-wizard.
+- Protonmail bridge is prone to timing out. Watch out for this while adding an account. If the bridge times out, try again.
 - If you have a university email, or enterprise-hosted email for work, there might be other hurdles or two-factor authentication you have to jump through. Some, for example, will want you to create a separate IMAP password, etc.
  - `isync` is not fully UTF-8 compatible, so non-Latin characters may be garbled (although sync should succeed). `mw` will also not autocreate mailbox shortcuts since it is looking for English mailbox names. I strongly recommend you to set your email language to English on your mail server to avoid these problems.
 

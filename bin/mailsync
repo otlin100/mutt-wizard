@@ -9,7 +9,8 @@ cp -f "$logfile" "$logfile_old"
 date >"$logfile"
 
 export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
+export DBUS_SESSION_BUS_ADDRESS
 export DISPLAY=:0.0
 [ -d "$XDG_DATA_HOME/gopass" ] && export PASSWORD_STORE_DIR="$XDG_DATA_HOME/gopass"
 
@@ -21,7 +22,7 @@ lognotify() {
 }
 
 # Run only if user logged in (prevent cron errors)
-pgrep -u "$USER" >/dev/null || { lognotify "$USER not logged in; sync will not run."; exit ;}
+pgrep -u "${USER:=$LOGNAME}" >/dev/null || { echo "$USER not logged in; sync will not run."; exit ;}
 # Run only if not already running in other instance
 pgrep -x mbsync >/dev/null && { lognotify "mbsync is already running."; exit ;}
 
