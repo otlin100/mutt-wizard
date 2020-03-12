@@ -28,6 +28,8 @@ auto_view text/html		# automatically show html (mailcap uses w3m)
 auto_view application/pgp-encrypted
 alternative_order text/plain text/enriched text/html
 
+set attach_save_dir="~/Downloads"
+
 # unbind
 
 bind index \Cf noop
@@ -42,7 +44,7 @@ bind editor <esc> noop
 set status_on_top = yes
 set date_format="%d.%m.%y %H:%M"
 set index_format="%2C %zs %?X?A& ? %D %-15.15F %s (%-4.4c)"
-set sidebar_format = '%B%?F? %F!?%* %?N?%N/?%?S?%S?'
+set sidebar_format = ' %B%?F? %F!?%* %?N?%N/?%?S?%S?'
 
 # General rebindings
 bind index l display-message
@@ -70,11 +72,11 @@ bind index,pager S sync-mailbox
 bind index,pager R group-reply
 bind index,pager B sidebar-toggle-visible
 
-macro index,pager a "<enter-command>set my_pipe_decode=\$pipe_decode pipe_decode<return><pipe-message>abook --add-email<return><enter-command>set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<return>" "add the sender address to abook"
+macro index,pager a "<enter-command>set my_pipe_decode=\$pipe_decode pipe_decode<return><pipe-message>abook --datafile $XDG_CONFIG_HOME/abook/addressbook --add-email<return><enter-command>set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<return>" "add the sender address to abook"
 macro index,pager \Ck "<sidebar-prev><sidebar-open>"
 macro index,pager \Cj "<sidebar-next><sidebar-open>"
-macro index,pager M "<save-message>?"
-macro index,pager C "<copy-message>?"
+macro index,pager M ";<save-message>?"
+macro index,pager C ";<copy-message>?"
 
 bind pager,alias,attach,compose,query,postpone h exit
 
@@ -87,6 +89,7 @@ bind pager \005 next-line		# Mouse wheel
 bind pager,browser gg top-page
 bind pager,browser G bottom-page
 
+bind browser <esc> exit
 macro browser h '<change-dir><kill-line>..<enter>' "Go to parent folder"
 
 bind browser,alias,query,postpone l select-entry
@@ -103,7 +106,7 @@ macro compose a "<attach-file>?"
 bind attach l view-mailcap
 bind attach <return> view-mailcap
 bind attach <space> tag-entry
-macro attach s "<save-entry><bol>~/Downloads/<return>" "Save to Downloads"
+macro attach s ";<save-entry><kill-line>~/Downloads/<enter>a<return>"
 
 # Sidebar mappings
 set sidebar_visible = yes

@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+accuracy_level=100000
+
+monitor_width=1920
+monitor_height=1080
+
+mutt_sidebar=240
+mutt_topbar=32
+
+usable_width=$(( $monitor_width-$mutt_sidebar ))
+usable_height=$(( $monitor_height-$mutt_topbar ))
+usable_ratio=$(( $usable_width * $accuracy_level / $usable_height ))
+
 properRender() {
     while read line; do
         firstchar=${line:0:1}
@@ -14,8 +26,22 @@ properRender() {
 resolution=$(identify $1 | awk '{print $3}')
 IFS='x' # x is set as delimiter
 read -ra ADDR <<< "$resolution"
+
 width=${ADDR[0]}
 height=${ADDR[1]}
 
+if [ $width -gt $usable_width -o $height -gt $usable_height ]; then
+
+    ratio=$(( $width * $accuracy_level / $height ))
+
+    if [ $ratio -gt $usable_ratio ]; then
+        width=$usable_width
+        height=$(( $usable_width * $accuracy_level / $ratio ))
+    else
+        height=$usable_height
+        width=$(( $usable_height * $ratio / $accuracy_level ))
+    fi
+fi
+
 ### Display Image / offset with mutt bar
-echo -e "2;3;\n0;1;225;32;$((width));$((height));0;0;0;0;$1\n4;\n3;" | properRender | /usr/lib/w3m/w3mimgdisplay &
+echo -e "2;3;\n0;1;$((mutt_sidebar));$((mutt_topbar));$((width));$((height));0;0;0;0;$1\n4;\n3;" | properRender | /usr/lib/w3m/w3mimgdisplay &
