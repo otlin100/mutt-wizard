@@ -21,20 +21,27 @@ lognotify() {
     notify-send "$@"
 }
 
+lognotify_exit() {
+    lognotify "$@"
+    exit 1
+}
+
+command -v mbsync >/dev/null || lognotify_exit "Please install isync to sync your mail!"
+
+mbsync_config="$XDG_CONFIG_HOME/mbsync/config"
+
+[ -f "$mbsync_config" ] || lognotify_exit "Please configure mbsync in ""$mbsync_config"" to sync yout mail!"
+
 # Run only if user logged in (prevent cron errors)
 pgrep -u "${USER:=$LOGNAME}" >/dev/null || { echo "$USER not logged in; sync will not run."; exit ;}
 # Run only if not already running in other instance
-pgrep -x mbsync >/dev/null && { lognotify "mbsync is already running."; exit ;}
+pgrep -x mbsync >/dev/null && lognotify_exit "mbsync is already running."
 
 # Checks for internet connection and set notification script.
 # ping -q -c 1 1.1.1.1 > /dev/null || { lognotify "No internet connection detected."; exit ;}
 
 echo "GPG Authentication..."
-gopass find mutt | head -n 1 | xargs gopass >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    lognotify "Authentication failed!" &
-    exit 1
-fi
+gopass show "$(gopass ls -f | head -n 1)" >/dev/null 2>&1 || lognotify_exit "Authentification failed"
 wait
 
 notify() { lognotify "mutt-wizard" "📬 $2 new mail(s) in \`$1\` account." ;}
@@ -42,7 +49,7 @@ notify() { lognotify "mutt-wizard" "📬 $2 new mail(s) in \`$1\` account." ;}
 # Check account for new mail. Notify if there is new content.
 syncandnotify() {
     acc="$(echo "$account" | sed "s/.*\///")"
-    mbsync -c "$XDG_CONFIG_HOME/mbsync/config" -V "$acc" 2>&1 | sed "s/^/$acc: /" >> "$logfile"
+    mbsync -c "$mbsync_config" -V "$acc" 2>&1 | sed "s/^/$acc: /" >> "$logfile"
     new=$(find "$XDG_DATA_HOME/mail/$acc/INBOX/new/" "$XDG_DATA_HOME/mail/$acc/Inbox/new/" "$XDG_DATA_HOME/mail/$acc/inbox/new/" -type f -newer "$XDG_CONFIG_HOME/mutt/.mailsynclastrun" 2> /dev/null)
     newcount=$(echo "$new" | sed '/^\s*$/d' | wc -l)
     if [ "$newcount" -gt "0" ]; then
@@ -58,7 +65,7 @@ syncandnotify() {
 
 # Sync accounts passed as argument or all.
 if [ "$#" -eq "0" ]; then
-    accounts="$(awk '/^Channel/ {print $2}' "$XDG_CONFIG_HOME/mbsync/config")"
+    accounts="$(awk '/^Channel/ {print $2}' "$mbsync_config")"
 else
     accounts=$*
 fi
