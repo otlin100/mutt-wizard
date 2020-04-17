@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 # Sync mail and give notification if there is new mail.
 
 logfile="$XDG_CONFIG_HOME"/mutt/.mbsync.log
@@ -49,8 +49,10 @@ notify() { lognotify "mutt-wizard" "📬 $2 new mail(s) in \`$1\` account." ;}
 # Check account for new mail. Notify if there is new content.
 syncandnotify() {
     acc="$(echo "$account" | sed "s/.*\///")"
-    mbsync -c "$mbsync_config" -V "$acc" 2>&1 | sed "s/^/$acc: /" >> "$logfile"
+    set -o pipefail; mbsync -c "$mbsync_config" -V "$acc" 2>&1 | sed "s/^/$acc: /" >> "$logfile" || notify-send "Something went wrong syncing '$account' with mbsync. Please check the logs in ""$logfile"" for further information"
+
     new=$(find "$XDG_DATA_HOME/mail/$acc/INBOX/new/" "$XDG_DATA_HOME/mail/$acc/Inbox/new/" "$XDG_DATA_HOME/mail/$acc/inbox/new/" -type f -newer "$XDG_CONFIG_HOME/mutt/.mailsynclastrun" 2> /dev/null)
+
     newcount=$(echo "$new" | sed '/^\s*$/d' | wc -l)
     if [ "$newcount" -gt "0" ]; then
         notify "$acc" "$newcount" &
