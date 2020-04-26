@@ -1,20 +1,16 @@
 #!/bin/bash
 # Sync mail and give notification if there is new mail.
 
-logfile="$XDG_CONFIG_HOME"/mutt/.mbsync.log
-logfile_old="$logfile"_old
-
-[ -z "$logfile_old" ] && rm "$logfile_old"
-cp -f "$logfile" "$logfile_old"
-date >"$logfile"
-
 export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
 export DBUS_SESSION_BUS_ADDRESS
 export DISPLAY=:0.0
+
 [ -d "$XDG_DATA_HOME/gopass" ] && export PASSWORD_STORE_DIR="$XDG_DATA_HOME/gopass"
 
-command -v notify-send >/dev/null || echo "Note that \`libnotify\` or \`libnotify-send\` should be installed for pop-up mail notifications with this script." &
+mbsync_config="$XDG_CONFIG_HOME/mbsync/config"
+logfile="$XDG_CONFIG_HOME"/mutt/.mbsync.log
+logfile_old="$logfile"_old
 
 lognotify() {
     echo "$@"
@@ -26,16 +22,21 @@ lognotify_exit() {
     exit 1
 }
 
-command -v mbsync >/dev/null || lognotify_exit "Please install isync to sync your mail!"
+# Run only if not already running in other instance
+pgrep -x mbsync >/dev/null && lognotify_exit "mbsync is already running."
 
-mbsync_config="$XDG_CONFIG_HOME/mbsync/config"
+[ -z "$logfile_old" ] && rm "$logfile_old"
+cp -f "$logfile" "$logfile_old"
+date >"$logfile"
+
+command -v notify-send >/dev/null || echo "Note that \`libnotify\` or \`libnotify-send\` should be installed for pop-up mail notifications with this script." &
+
+command -v mbsync >/dev/null || lognotify_exit "Please install isync to sync your mail!"
 
 [ -f "$mbsync_config" ] || lognotify_exit "Please configure mbsync in ""$mbsync_config"" to sync yout mail!"
 
 # Run only if user logged in (prevent cron errors)
 pgrep -u "${USER:=$LOGNAME}" >/dev/null || { echo "$USER not logged in; sync will not run."; exit ;}
-# Run only if not already running in other instance
-pgrep -x mbsync >/dev/null && lognotify_exit "mbsync is already running."
 
 # Checks for internet connection and set notification script.
 # ping -q -c 1 1.1.1.1 > /dev/null || { lognotify "No internet connection detected."; exit ;}
