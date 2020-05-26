@@ -18,6 +18,8 @@ Specifically, this wizard:
 
 ## Install and Use
 
+`makepkg -ci`
+
 ```
 git clone https://github.com/LukeSmithxyz/mutt-wizard
 cd mutt-wizard
