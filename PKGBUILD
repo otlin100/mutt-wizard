@@ -2,12 +2,12 @@
 # Upstream author :  Luke Smith <https://git{hub,lab}.com/lukesmithxyz/>
 
 
-pkgname=mutt-wizard-git
+pkgname=mutt-wizard-lin-git
 pkgver() {
-  cd "$srcdir/${pkgname%-git}"
+  cd "$srcdir/${pkgname%-lin-git}"
   printf 'r%s.g%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
-pkgver=r773.gedcec48
+pkgver=r774.g5cc1f4c
 pkgrel=1
 
 pkgdesc='A simple interface to auto-configure neomutt and isync with safe passwords'
@@ -15,8 +15,8 @@ arch=('x86_64')
 url='https://github.com/otlin100/mutt-wizard'
 license=('GPL3')
 
-provides=("${pkgname%-git}")
-conflicts=("${pkgname%-git}")
+provides=("${pkgname%-lin-git}")
+conflicts=("${pkgname%-lin-git}")
 
 makedepends=('git')
 depends=('neomutt' 'abook' 'isync' 'msmtp' 'notmuch-runtime' 'gopass' 'w3m' 'dunst' 'lynx')
@@ -35,9 +35,9 @@ source=("git+$url")
 sha256sums=('SKIP')
 
 package() {
-  cd "$srcdir/${pkgname%-git}"
+  cd "$srcdir/${pkgname%-lin-git}"
   make PREFIX=/usr DESTDIR="$pkgdir" -s install
-  install -Dm644 -t "$pkgdir/usr/share/doc/${pkgname%-git}/" README.md
+  install -Dm644 -t "$pkgdir/usr/share/doc/${pkgname%-lin-git}/" README.md
 }
 
 
