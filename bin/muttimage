@@ -16,7 +16,7 @@ properRender() {
     while read line; do
         firstchar=${line:0:1}
         if [[ $firstchar = '0' ]]; then
-            sleep 0.1
+            sleep 0.5
         fi
         echo "$line"
     done;
