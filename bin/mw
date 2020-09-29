@@ -37,14 +37,14 @@ host $smtp
 port $sport
 from $fulladdr
 user $login
-passwordeval \"$pass show mutt-wizard-$title\"
+passwordeval \"$pass show -o mutt-wizard-$title\"
 $starttlsoff
 "
 mbsync_profile="IMAPStore $title-remote
 Host $imap
 Port  $iport
 User $login
-PassCmd \"$pass show mutt-wizard-$title\"
+PassCmd \"$pass show -o mutt-wizard-$title\"
 SSLType $ssltype
 CertificateFile $sslcert
 
@@ -92,7 +92,7 @@ set folder = \"imaps://$fulladdr@$imap:$iport\"
 set imap_user = \"$login\"
 set header_cache = $cachedir/$title/headers
 set message_cachedir = $cachedir/$title/bodies
-set imap_pass = \"\`$pass mutt-wizard-$title\`\"
+set imap_pass = \"\`$pass show -o mutt-wizard-$title\`\"
 set mbox_type = Maildir
 set ssl_starttls = yes
 set ssl_force_tls = yes
