@@ -37,14 +37,14 @@ host $smtp
 port $sport
 from $fulladdr
 user $login
-passwordeval \"$pass mutt-wizard-$title\"
+passwordeval \"$pass show mutt-wizard-$title\"
 $starttlsoff
 "
 mbsync_profile="IMAPStore $title-remote
 Host $imap
 Port  $iport
 User $login
-PassCmd \"$pass mutt-wizard-$title\"
+PassCmd \"$pass show mutt-wizard-$title\"
 SSLType $ssltype
 CertificateFile $sslcert
 
