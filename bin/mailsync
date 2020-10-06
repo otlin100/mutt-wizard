@@ -65,6 +65,7 @@ syncandnotify() {
             lognotify "📧 $from:" "$subject" &
         done
     fi
+    lognotify "finished '$acc'"
 }
 
 # Sync accounts passed as argument or all.
