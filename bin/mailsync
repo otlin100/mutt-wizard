@@ -17,6 +17,11 @@ lognotify() {
     notify-send "$@"
 }
 
+lognotify_infinite() {
+    echo "$@"
+    notify-send -t 0 "$@"
+}
+
 lognotify_exit() {
     lognotify "$@"
     exit 1
@@ -50,7 +55,6 @@ notify() { lognotify "mutt-wizard" "📬 $2 new mail(s) in \`$1\` account." ;}
 # Check account for new mail. Notify if there is new content.
 syncandnotify() {
     acc="$(echo "$account" | sed "s/.*\///")"
-    lognotify "syncing '$acc'"
     set -o pipefail; (time mbsync -c "$mbsync_config" -V "$acc") 2>&1 | sed "s/^/$acc: /" >> "$logfile" || notify-send "Something went wrong syncing '$account' with mbsync. Please check the logs in ""$logfile"" for further information"
 
     new=$(find "$XDG_DATA_HOME/mail/$acc/INBOX/new/" "$XDG_DATA_HOME/mail/$acc/Inbox/new/" "$XDG_DATA_HOME/mail/$acc/inbox/new/" -type f -newer "$XDG_CONFIG_HOME/mutt/.mailsynclastrun" 2> /dev/null)
@@ -62,7 +66,7 @@ syncandnotify() {
             # Extract subject and sender from mail.
             from=$(awk '/^From: / && ++n ==1,/^\<.*\>:/' "$file" | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' | awk '{ $1=""; if (NF>=3)$NF=""; print $0 }' | sed 's/^[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//')
             subject=$(awk '/^Subject: / && ++n == 1,/^\<.*\>: / && ++i == 2' "$file" | head -n-1 | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' | sed 's/^Subject: //' | sed 's/^{[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//' | tr -d '\n')
-            lognotify "📧 $from:" "$subject" &
+            lognotify_infinite "📧 $from:" "$subject" &
         done
     fi
     lognotify "finished '$acc'"
@@ -79,6 +83,7 @@ echo " 🔃" > /tmp/imapsyncicon_"$USER"
 pkill -RTMIN+12 i3blocks >/dev/null 2>&1
 
 # Parallelize multiple accounts
+
 for account in $accounts
 do
     syncandnotify &
