@@ -14,16 +14,16 @@ logfile_old="$logfile"_old
 
 lognotify() {
     echo "$@"
-    notify-send "" "$@"
+    notify-send "$@"
 }
 
 lognotify_infinite() {
     echo "$@"
-    notify-send -t 0 "" "$@"
+    notify-send -t 0 "$@"
 }
 
 lognotify_exit() {
-    lognotify "" "$@"
+    lognotify "$@"
     exit 1
 }
 
@@ -69,7 +69,7 @@ syncandnotify() {
             lognotify_infinite "📧 $from:" "$subject" &
         done
     fi
-    lognotify "finished '$acc'"
+    lognotify "Account: '$acc'" "Sync successful!"
 }
 
 # Sync accounts passed as argument or all.
@@ -83,6 +83,8 @@ echo " 🔃" > /tmp/imapsyncicon_"$USER"
 pkill -RTMIN+12 i3blocks >/dev/null 2>&1
 
 # Parallelize multiple accounts
+
+lognotify " Syncing Accounts:" "'$accounts'"
 
 for account in $accounts
 do
