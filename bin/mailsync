@@ -14,16 +14,16 @@ logfile_old="$logfile"_old
 
 lognotify() {
     echo "$@"
-    notify-send "$@"
+    notify-send "" "$@"
 }
 
 lognotify_infinite() {
     echo "$@"
-    notify-send -t 0 "$@"
+    notify-send -t 0 "" "$@"
 }
 
 lognotify_exit() {
-    lognotify "$@"
+    lognotify "" "$@"
     exit 1
 }
 
