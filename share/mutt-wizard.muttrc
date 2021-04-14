@@ -105,7 +105,8 @@ macro compose a "<attach-file>?"
 bind attach l view-mailcap
 bind attach <return> view-mailcap
 bind attach <space> tag-entry
-macro attach s ";<save-entry><kill-line>~/Downloads/<enter>a<return>"
+macro attach s "<save-entry><kill-line>~/Downloads/<enter>a<return>"
+macro attach e "<pipe-entry>$EDITOR<return>"
 
 # Sidebar mappings
 set sidebar_visible = yes

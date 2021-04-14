@@ -55,7 +55,7 @@ notify() { lognotify "mutt-wizard" "📬 $2 new mail(s) in \`$1\` account." ;}
 # Check account for new mail. Notify if there is new content.
 syncandnotify() {
     acc="$(echo "$account" | sed "s/.*\///")"
-    set -o pipefail; (time mbsync -c "$mbsync_config" -V "$acc") 2>&1 | sed "s/^/$acc: /" >> "$logfile" || notify-send "Something went wrong syncing '$account' with mbsync. Please check the logs in ""$logfile"" for further information"
+    set -o pipefail; (time mbsync -c "$mbsync_config" -V "$acc") 2>&1 | sed "s/^/$acc: /" >> "$logfile" || notify-send "Account: $acc" "Something went wrong syncing with mbsync. Please check the logs in ""$logfile"" for further information"
 
     new=$(find "$XDG_DATA_HOME/mail/$acc/INBOX/new/" "$XDG_DATA_HOME/mail/$acc/Inbox/new/" "$XDG_DATA_HOME/mail/$acc/inbox/new/" -type f -newer "$XDG_CONFIG_HOME/mutt/.mailsynclastrun" 2> /dev/null)
 
